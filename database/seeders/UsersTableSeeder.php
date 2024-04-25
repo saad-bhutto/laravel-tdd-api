@@ -23,8 +23,9 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('password')
         ]);
 
-         // Generate a Sanctum token for the user
-         $token = $this->createToken($userId);
+
+         User::factory(10)->create();
+         User::all()->map(fn($user) => $this->createToken($user->id));
 
     }
 

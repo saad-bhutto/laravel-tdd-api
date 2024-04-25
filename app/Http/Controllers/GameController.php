@@ -98,6 +98,7 @@ class GameController extends Controller implements GameControllerInterface
     public function update(GameRequest $request, Game $game): JsonResponse
     {
         try {
+            $this->authorize('update', $game);
 
             $game =  $this->gameService->update([
                 'name' => $request->get('name'),

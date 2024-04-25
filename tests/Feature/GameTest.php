@@ -71,6 +71,26 @@ class GameTest extends TestCase
             ]);
     }
 
+    public function testCreateFailedWhileValidation(): void
+    {
+        $this->seed(UsersTableSeeder::class);
+        $this->actingAs(User::admin()->first());
+
+        //   below to include the required header or URL parameter to achieve that
+        $this
+            ->post(self::ROUTE_BASE, [
+                'name' => \Str::random(1000),
+            ])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonStructure([
+                'errors',
+                'message',
+            ])
+            ->assertJsonFragment([
+                "message" => "The name field must not be greater than 255 characters."
+            ]);
+    }
+
     public function testReadSucceeds(): void
     {
         $this->seed(UsersTableSeeder::class);
@@ -126,6 +146,35 @@ class GameTest extends TestCase
             ])
             ->assertJsonFragment([
                 'name' => 'Rogue Knight Remastered'
+            ]);
+    }
+
+    public function testUpdateFailedWhileOtherUser(): void
+    {
+        $this->seed(UsersTableSeeder::class);
+        $this->actingAs(User::admin()->first());
+        $response = $this->post(self::ROUTE_BASE, [
+            'name' => 'Rogue Knight By Admin'
+        ]);
+        $adminGameId = $response->json('id');
+
+        $this->actingAs(User::latest()->first());
+        $response = $this->post(self::ROUTE_BASE, [
+            'name' => 'Rogue Knight by Another User'
+        ]);
+
+        $this
+            ->put(self::ROUTE_BASE . $adminGameId, [
+                'name' => 'Rogue Knight Remastered'
+            ])
+            ->assertStatus(Response::HTTP_BAD_REQUEST)
+            ->assertJsonStructure([
+                'status',
+                'data',
+                'errors',
+            ])
+            ->assertJsonFragment([
+                "message" => "This action is unauthorized."
             ]);
     }
 

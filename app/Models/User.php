@@ -46,9 +46,9 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function game()
+    public function games()
     {
-        return $this->belongsTo(Game::class);
+        return $this->hasMany(Game::class);
     }
     /**
      * Get all of the carriers that are assigned this state.

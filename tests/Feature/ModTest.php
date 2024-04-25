@@ -56,6 +56,29 @@ class ModTest extends TestCase
             ]);
     }
 
+    public function testCreateFailedWhileValidation(): void
+    {
+
+        $this->seed(GameTableSeeder::class);
+        $this->actingAs(User::admin()->first());
+
+        $game = Game::inRandomOrder()->first();
+        //   below to include the required header or URL parameter to achieve that
+        $this
+            ->post('api/games/' . $game->id . '/mods', [
+                'name' => \Str::random(1000),
+            ])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonStructure([
+                'errors',
+                'message',
+            ])
+            ->assertJsonFragment([
+                "message" => "The name field must not be greater than 255 characters."
+            ]);
+
+    }
+
     public function testCreateSucceedsWhileAuthenticated(): void
     {
 

@@ -5,13 +5,12 @@ namespace App\Repositories;
 use App\Models\Game;
 
 /**
- * GameRepository
- *
+ * GameRepository to interact with the the Database
  */
 class GameRepository extends BaseRepository
 {
     /**
-     * DummyModelRepository constructor.
+     * GameRepository default constructor.
      * @param  Game  $model
      */
     public function __construct(Game $model)

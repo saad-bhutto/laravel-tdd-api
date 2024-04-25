@@ -5,12 +5,12 @@ namespace App\Repositories;
 use App\Models\Mod;
 
 /**
- * GameRepository
+ * ModRepository to interact with the database.
  */
 class ModRepository extends BaseRepository
 {
     /**
-     * DummyModelRepository constructor.
+     * ModRepository default constructor.
      * @param  Mod  $model
      */
     public function __construct(Mod $model)
