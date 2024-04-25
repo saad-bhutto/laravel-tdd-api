@@ -28,4 +28,13 @@ class Mod extends Model
     {
         return $this->belongsTo(Game::class);
     }
+
+    /**
+     * Relation with user.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
 }

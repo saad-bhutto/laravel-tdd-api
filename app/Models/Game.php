@@ -20,10 +20,21 @@ class Game extends Model
         'user_id',
     ];
 
+
+    /**
+     * Relation with user.
+     */
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * Relation with mods.
+     */
+    public function mods()
+    {
+        return $this->hasMany(Mod::class);
+    }
 
 }

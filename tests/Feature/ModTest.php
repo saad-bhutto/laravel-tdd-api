@@ -191,6 +191,35 @@ class ModTest extends TestCase
                 'user_id' => User::admin()->first()->id,
             ]);
     }
+    public function testUpdateFailedWhileOtherUser(): void
+    {
+
+        $this->seed(UsersTableSeeder::class);
+
+        $this->actingAs(User::admin()->first());
+        $response = $this->post('api/games', ['name' => 'Rogue Knight by Admin'])->assertStatus(Response::HTTP_CREATED);
+        $admin_game_id = $response->json('id');
+        $response = $this->post('api/games/' . $admin_game_id . '/mods', ['name' => 'Lightsaber admin'])->assertStatus(Response::HTTP_CREATED);
+        $admin_mod_id = $response->json('id');
+
+
+        $this->actingAs(User::latest()->first());
+        $response = $this->post('api/games', ['name' => 'Rogue Knight by other user'])->assertStatus(Response::HTTP_CREATED);
+        $game_id = $response->json('id');
+        $response = $this->post('api/games/' . $game_id . '/mods', ['name' => 'Lightsaber other'])->assertStatus(Response::HTTP_CREATED);
+
+        $this
+            ->put('api/games/' . $admin_game_id . '/mods/' . $response->json('id'), [
+                'name' => 'Lightsabers (Full set)'
+            ])
+            ->assertStatus(Response::HTTP_NOT_FOUND)
+            ->assertJsonStructure([
+                'error',
+            ])
+            ->assertJsonFragment([
+                'error' => 'Not Found',
+            ]);
+    }
 
     public function testUpdateFailsWhileUnauthenticated(): void
     {

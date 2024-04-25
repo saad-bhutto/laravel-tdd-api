@@ -100,6 +100,8 @@ class ModController extends Controller implements ModControllerInterface
     public function update(ModRequest $request, Game $game, Mod $mod): JsonResponse
     {
         try {
+            $this->authorize('update', $mod);
+
             $mod =  $this->modService->update([
                 'name' => $request->get('name'),
             ], $mod->id);
@@ -119,6 +121,8 @@ class ModController extends Controller implements ModControllerInterface
     public function delete(Request $request, Game $game, Mod $mod): JsonResponse
     {
         try {
+            $this->authorize('delete', $mod);
+
             return response()->json(
                 $this->modService->delete($mod),
                 Response::HTTP_NO_CONTENT

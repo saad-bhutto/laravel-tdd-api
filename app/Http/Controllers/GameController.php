@@ -76,7 +76,6 @@ class GameController extends Controller implements GameControllerInterface
 
     /**
      * function to read the resource.
-     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -119,6 +118,8 @@ class GameController extends Controller implements GameControllerInterface
     public function delete(Request $request, Game $game): JsonResponse
     {
         try {
+            $this->authorize('delete', $game);
+
             return response()->json(
                 $this->gameService->delete($game),
                 Response::HTTP_NO_CONTENT
