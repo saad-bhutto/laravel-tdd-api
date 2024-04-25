@@ -1,6 +1,6 @@
 # Laravel TDD API with swagger
 
-![alt text](https://github.com/saad-bhutto/laravel-tdd-api/bg.png)
+![alt text](https://github.com/saad-bhutto/laravel-tdd-api/blob/main/bg.png?raw=true)
 
 
 ### Requirements
