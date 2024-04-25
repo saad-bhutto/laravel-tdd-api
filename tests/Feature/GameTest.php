@@ -16,12 +16,11 @@ class GameTest extends TestCase
 
     const ROUTE_BASE = 'api/games/';
 
-    public function testBrowseSucceeds() : void
+    public function testBrowseSucceeds(): void
     {
         $this->seed(GameTableSeeder::class);
         //  in order for this test to pass, you will need to seed at least 1 game
 
-        // dd($this->get('api/games')->json());
         $this
             ->get(self::ROUTE_BASE)
             ->assertStatus(Response::HTTP_OK)
@@ -35,21 +34,21 @@ class GameTest extends TestCase
                         'updated_at'
                     ]
                 ],
-                'current_page',
-                'from',
-                'last_page',
-                'path',
-                'per_page',
-                'to',
-                'total',
-                "first_page_url",
-                "from",
-                "last_page",
-                "last_page_url",
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'path',
+                    'per_page',
+                    'to',
+                    'total',
+                    "from",
+                    "last_page",
+                ]
             ]);
     }
 
-    public function testCreateSucceedsWhileAuthenticated() : void
+    public function testCreateSucceedsWhileAuthenticated(): void
     {
         $this->seed(UsersTableSeeder::class);
         $this->actingAs(User::admin()->first());
@@ -72,7 +71,7 @@ class GameTest extends TestCase
             ]);
     }
 
-    public function testReadSucceeds() : void
+    public function testReadSucceeds(): void
     {
         $this->seed(UsersTableSeeder::class);
         $this->actingAs(User::admin()->first());
@@ -82,7 +81,7 @@ class GameTest extends TestCase
         ]);
 
         $this
-            ->get('api/games/'.$response->json('id'))
+            ->get('api/games/' . $response->json('id'))
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure([
                 'id',
@@ -96,7 +95,7 @@ class GameTest extends TestCase
             ]);
     }
 
-    public function testCreateFailsWhileUnauthenticated() : void
+    public function testCreateFailsWhileUnauthenticated(): void
     {
         $this
             ->post(self::ROUTE_BASE, [
@@ -105,7 +104,7 @@ class GameTest extends TestCase
             ->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
-    public function testUpdateSucceedsWhileAuthenticated() : void
+    public function testUpdateSucceedsWhileAuthenticated(): void
     {
         $this->seed(UsersTableSeeder::class);
         $this->actingAs(User::admin()->first());
@@ -114,7 +113,7 @@ class GameTest extends TestCase
         ]);
 
         $this
-            ->put(self::ROUTE_BASE .$response->json('id'), [
+            ->put(self::ROUTE_BASE . $response->json('id'), [
                 'name' => 'Rogue Knight Remastered'
             ])
             ->assertStatus(Response::HTTP_OK)
@@ -130,7 +129,7 @@ class GameTest extends TestCase
             ]);
     }
 
-    public function testUpdateFailsWhileUnauthenticated() : void
+    public function testUpdateFailsWhileUnauthenticated(): void
     {
         $this->seed(GameTableSeeder::class);
         $game = Game::first();
@@ -143,7 +142,7 @@ class GameTest extends TestCase
             ->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
-    public function testDeleteSucceedsWhileAuthenticated() : void
+    public function testDeleteSucceedsWhileAuthenticated(): void
     {
         $this->seed(UsersTableSeeder::class);
         $this->actingAs(User::admin()->first());
@@ -154,7 +153,7 @@ class GameTest extends TestCase
 
         // just to ensure the game actually exists
         $this
-            ->get(self::ROUTE_BASE .$response->json('id'))
+            ->get(self::ROUTE_BASE . $response->json('id'))
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure([
                 'id',
@@ -168,11 +167,11 @@ class GameTest extends TestCase
             ]);
 
         $this
-            ->delete(self::ROUTE_BASE .$response->json('id'))
+            ->delete(self::ROUTE_BASE . $response->json('id'))
             ->assertStatus(Response::HTTP_NO_CONTENT);
     }
 
-    public function testDeleteFailsWhileUnauthenticated() : void
+    public function testDeleteFailsWhileUnauthenticated(): void
     {
 
         $this->seed(GameTableSeeder::class);
@@ -180,7 +179,7 @@ class GameTest extends TestCase
 
         // and just for sanity we make sure it actually got created
         $this
-            ->get(self::ROUTE_BASE .$game->id)
+            ->get(self::ROUTE_BASE . $game->id)
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure([
                 'id',
@@ -193,7 +192,7 @@ class GameTest extends TestCase
 
         // then we finally attempt to delete it without authentication present
         $this
-            ->delete(self::ROUTE_BASE .$game->id)
+            ->delete(self::ROUTE_BASE . $game->id)
             ->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 }

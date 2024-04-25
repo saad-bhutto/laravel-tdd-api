@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Contracts\ModControllerInterface;
 use App\Http\Requests\ModRequest;
+use App\Http\Resources\ModCollection;
+use App\Http\Resources\ModResource;
 use App\Models\Game;
 use App\Models\Mod;
 use App\Services\ModService;
@@ -42,12 +44,12 @@ class ModController extends Controller implements ModControllerInterface
     public function browse(Request $request, Game $game): JsonResponse
     {
         try {
-            return response()->json(
-                $this->modService->paginate(
-                    request()->get('per_page', 15),
-                    request()->get('page', 1)
-                )
-            );
+            $collection = new ModCollection($this->modService->paginate(
+                request()->get('per_page', 15),
+                request()->get('page', 1)
+            ));
+
+            return $collection->response();
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), $th);
         }
@@ -62,14 +64,13 @@ class ModController extends Controller implements ModControllerInterface
     public function create(ModRequest $request, Game $game): JsonResponse
     {
         try {
-            return response()->json(
-                $this->modService->create([
-                    'name' => $request->get('name'),
-                    'game_id' => $game->id,
-                    'user_id' => auth()->user()->id
-                ]),
-                Response::HTTP_CREATED
-            );
+            $mod = $this->modService->create([
+                'name' => $request->get('name'),
+                'game_id' => $game->id,
+                'user_id' => auth()->user()->id
+            ]);
+
+            return (new ModResource($mod))->response();
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), $th);
         }
@@ -84,7 +85,7 @@ class ModController extends Controller implements ModControllerInterface
     public function read(Request $request, Game $game, Mod $mod): JsonResponse
     {
         try {
-            return response()->json($mod);
+            return (new ModResource($mod))->response();
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), $th);
         }
@@ -99,12 +100,11 @@ class ModController extends Controller implements ModControllerInterface
     public function update(ModRequest $request, Game $game, Mod $mod): JsonResponse
     {
         try {
-            return response()->json(
-                $this->modService->update([
-                    'name' => $request->get('name'),
-                ], $mod->id),
-                Response::HTTP_OK
-            );
+            $mod =  $this->modService->update([
+                'name' => $request->get('name'),
+            ], $mod->id);
+
+            return (new ModResource($mod))->response();
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), $th);
         }

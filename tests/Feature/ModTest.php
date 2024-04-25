@@ -37,17 +37,17 @@ class ModTest extends TestCase
                         'updated_at'
                     ]
                 ],
-                'current_page',
-                'from',
-                'last_page',
-                'path',
-                'per_page',
-                'to',
-                'total',
-                "first_page_url",
-                "from",
-                "last_page",
-                "last_page_url",
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'path',
+                    'per_page',
+                    'to',
+                    'total',
+                    "from",
+                    "last_page",
+                ]
             ])
             ->assertJsonFragment([
                 'id' => $mod->id,

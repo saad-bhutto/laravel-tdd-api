@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Contracts\GameControllerInterface;
 use App\Http\Requests\GameRequest;
+use App\Http\Resources\GameCollection;
+use App\Http\Resources\GameResource;
 use App\Models\Game;
 use App\Services\GameService;
 use Illuminate\Http\JsonResponse;
@@ -40,12 +42,12 @@ class GameController extends Controller implements GameControllerInterface
     public function browse(Request $request): JsonResponse
     {
         try {
-            return response()->json(
-                $this->gameService->paginate(
-                    request()->get('per_page', 15),
-                    request()->get('page', 1)
-                )
-            );
+            $collection = new GameCollection($this->gameService->paginate(
+                request()->get('per_page', 15),
+                request()->get('page', 1)
+            ));
+
+            return $collection->response();
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), $th);
         }
@@ -60,13 +62,13 @@ class GameController extends Controller implements GameControllerInterface
     public function create(GameRequest $request): JsonResponse
     {
         try {
-            return response()->json(
-                $this->gameService->create([
-                    'name' => $request->get('name'),
-                    'user_id' => auth()->user()->id
-                ]),
-                Response::HTTP_CREATED
-            );
+
+            $game =  $this->gameService->create([
+                'name' => $request->get('name'),
+                'user_id' => auth()->user()->id
+            ]);
+
+            return (new GameResource($game))->response();
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), $th);
         }
@@ -81,7 +83,7 @@ class GameController extends Controller implements GameControllerInterface
     public function read(Request $request, Game $game): JsonResponse
     {
         try {
-            return response()->json($game);
+            return (new GameResource($game))->response();
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), $th);
         }
@@ -96,12 +98,12 @@ class GameController extends Controller implements GameControllerInterface
     public function update(GameRequest $request, Game $game): JsonResponse
     {
         try {
-            return response()->json(
-                $this->gameService->update([
-                    'name' => $request->get('name'),
-                ], $game->id),
-                Response::HTTP_OK
-            );
+
+            $game =  $this->gameService->update([
+                'name' => $request->get('name'),
+            ], $game->id);
+
+            return (new GameResource($game))->response();
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), $th);
         }
