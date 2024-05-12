@@ -12,7 +12,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    public const ADMIN_EMAIL = '/dashboard';
+    public const ADMIN_EMAIL = 'admin@example.com';
 
 
     /**
